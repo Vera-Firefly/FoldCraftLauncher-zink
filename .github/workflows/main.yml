@@ -13,7 +13,6 @@ on:
 
 jobs:
   FCLTeamBuild:
-    if: github.repository_owner == 'FCL-Team' && !startsWith(github.ref, 'refs/pull/')
     strategy:
       matrix:
         arch: [ "all", "arm", "arm64", "x86", "x86_64" ]
@@ -58,7 +57,14 @@ jobs:
 
 #only for fork
   DebugBuild:
-    if: github.repository_owner != 'FCL-Team' || startsWith(github.ref, 'refs/pull/')
+    strategy:
+      matrix:
+        arch: [ "all", "arm", "arm64", "x86", "x86_64" ]
+      fail-fast: false
+    env:
+      FCL_KEYSTORE_PASSWORD: ${{ secrets.FCL_KEYSTORE_PASSWORD }}
+      CURSE_API_KEY: ${{ secrets.CURSE_API_KEY }}
+      OAUTH_API_KEY: ${{ secrets.OAUTH_API_KEY }}
     name: Build Debug
     runs-on: ubuntu-20.04
     steps:
@@ -75,10 +81,10 @@ jobs:
       - name: Build debug apk
         run: |
           chmod +x gradlew
-          ./gradlew assemblefordebug -Darch=all
+          ./gradlew assemblefordebug -Darch=${{matrix.arch}}
 
       - name: Upload debug apk
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-all
+          name: app-debug-${{matrix.arch}}
           path: FCL/build/outputs/apk/fordebug/*
