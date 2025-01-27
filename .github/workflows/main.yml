@@ -71,5 +71,5 @@ jobs:
       - name: Upload debug apk
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-all
+          name: app-debug-${{matrix.arch}}
           path: FCL/build/outputs/apk/fordebug/*
