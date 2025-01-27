@@ -46,6 +46,8 @@ static void makeContextCurrentOSMesa(_GLFWwindow* window)
     if (window)
     {
         int width, height;
+        bool Initialframe = false;
+        if (!Initialframe) ANativeWindow_lock(window->fcl.handle, &buf, NULL);
         _glfwPlatformGetFramebufferSize(window, &width, &height);
 
         // Check to see if we need to allocate a new buffer
@@ -72,7 +74,6 @@ static void makeContextCurrentOSMesa(_GLFWwindow* window)
         }
 
         if (strcmp(getenv("LIBGL_STRING"), "VirGLRenderer") != 0) {
-            ANativeWindow_lock(window->fcl.handle, &buf, NULL);
             OSMesaPixelStore(OSMESA_ROW_LENGTH, buf.stride);
             stride = buf.stride;
             OSMesaPixelStore(OSMESA_Y_UP, 0);
@@ -93,7 +94,11 @@ static void makeContextCurrentOSMesa(_GLFWwindow* window)
         int pixelsArr[4];
         window->context.ReadPixels(0, 0, 1, 1, GL_RGB, GL_INT, &pixelsArr);
 
-        window->context.swapBuffers(window);
+        if (!Initialframe)
+        {
+            ANativeWindow_unlockAndPost(window->fcl.handle);
+            Initialframe = true;
+        }
     }
 
     _glfwPlatformSetTls(&_glfw.contextSlot, window);
@@ -126,6 +131,7 @@ static void swapBuffersOSMesa(_GLFWwindow* window)
         window->context.Finish();
         vtest_swap_buffers();
     } else {
+        ANativeWindow_lock(window->fcl.handle, &buf, NULL);
         OSMesaContext context = OSMesaGetCurrentContext();
         if (context == NULL) {
             printf("OSMesa: attempted to swap buffers without context!");
@@ -136,7 +142,6 @@ static void swapBuffersOSMesa(_GLFWwindow* window)
         stride = buf.stride;
         window->context.Finish();
         ANativeWindow_unlockAndPost(window->fcl.handle);
-        ANativeWindow_lock(window->fcl.handle, &buf, NULL);
     }
 }
 
