@@ -401,7 +401,6 @@ public class FCLauncher {
     }
 
     public static FCLBridge launchMinecraft(FCLConfig config) {
-
         // initialize FCLBridge
         FCLBridge bridge = new FCLBridge();
         bridge.setLogPath(config.getLogDir() + "/latest_game.log");
@@ -409,30 +408,23 @@ public class FCLauncher {
             try {
                 logStartInfo(bridge, "Minecraft");
                 logModList(bridge);
-
                 // env
                 setEnv(config, bridge, true);
-
                 // setup java runtime
                 setUpJavaRuntime(config, bridge);
-
                 // setup graphic and sound engine
                 setupGraphicAndSoundEngine(config, bridge);
-
                 // set working directory
                 log(bridge, "Working directory: " + config.getWorkingDir());
                 bridge.chdir(config.getWorkingDir());
-
                 // launch game
                 launch(config, bridge, "Minecraft");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
-
         gameThread.setPriority(Thread.MAX_PRIORITY);
         bridge.setThread(gameThread);
-
         return bridge;
     }
 
