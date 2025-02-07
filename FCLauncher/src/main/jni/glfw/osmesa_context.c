@@ -208,22 +208,39 @@ GLFWbool _glfwInitOSMesa(void)
         return GLFW_FALSE;
     }
 
-    _glfw.osmesa.CreateContext = (PFN_OSMesaCreateContext)
-        _glfw_dlsym(_glfw.osmesa.handle, "OSMesaCreateContext");
-    _glfw.osmesa.GetCurrentContext = (PFN_OSMesaGetCurrentContext)
-        _glfw_dlsym(_glfw.osmesa.handle, "OSMesaGetCurrentContext");
-    _glfw.osmesa.DestroyContext = (PFN_OSMesaDestroyContext)
-        _glfw_dlsym(_glfw.osmesa.handle, "OSMesaDestroyContext");
-    _glfw.osmesa.PixelStore = (PFN_OSMesaPixelStore)
-        _glfw_dlsym(_glfw.osmesa.handle, "OSMesaPixelStore");
-    _glfw.osmesa.MakeCurrent = (PFN_OSMesaMakeCurrent)
-        _glfw_dlsym(_glfw.osmesa.handle, "OSMesaMakeCurrent");
-    _glfw.osmesa.GetColorBuffer = (PFN_OSMesaGetColorBuffer)
-        _glfw_dlsym(_glfw.osmesa.handle, "OSMesaGetColorBuffer");
-    _glfw.osmesa.GetDepthBuffer = (PFN_OSMesaGetDepthBuffer)
-        _glfw_dlsym(_glfw.osmesa.handle, "OSMesaGetDepthBuffer");
     _glfw.osmesa.GetProcAddress = (PFN_OSMesaGetProcAddress)
         _glfw_dlsym(_glfw.osmesa.handle, "OSMesaGetProcAddress");
+    if (_glfw.osmesa.GetProcAddress) {
+        _glfw.osmesa.CreateContext = (PFN_OSMesaCreateContext)
+            getProcAddressOSMesa("OSMesaCreateContext");
+        _glfw.osmesa.GetCurrentContext = (PFN_OSMesaGetCurrentContext)
+            getProcAddressOSMesa("OSMesaGetCurrentContext");
+        _glfw.osmesa.DestroyContext = (PFN_OSMesaDestroyContext)
+            getProcAddressOSMesa("OSMesaDestroyContext");
+        _glfw.osmesa.PixelStore = (PFN_OSMesaPixelStore)
+            getProcAddressOSMesa("OSMesaPixelStore");
+        _glfw.osmesa.MakeCurrent = (PFN_OSMesaMakeCurrent)
+            getProcAddressOSMesa("OSMesaMakeCurrent");
+        _glfw.osmesa.GetColorBuffer = (PFN_OSMesaGetColorBuffer)
+            getProcAddressOSMesa("OSMesaGetColorBuffer");
+        _glfw.osmesa.GetDepthBuffer = (PFN_OSMesaGetDepthBuffer)
+            getProcAddressOSMesa("OSMesaGetDepthBuffer");
+    } else {
+        _glfw.osmesa.CreateContext = (PFN_OSMesaCreateContext)
+            _glfw_dlsym(_glfw.osmesa.handle, "OSMesaCreateContext");
+        _glfw.osmesa.GetCurrentContext = (PFN_OSMesaGetCurrentContext)
+            _glfw_dlsym(_glfw.osmesa.handle, "OSMesaGetCurrentContext");
+        _glfw.osmesa.DestroyContext = (PFN_OSMesaDestroyContext)
+            _glfw_dlsym(_glfw.osmesa.handle, "OSMesaDestroyContext");
+        _glfw.osmesa.PixelStore = (PFN_OSMesaPixelStore)
+            _glfw_dlsym(_glfw.osmesa.handle, "OSMesaPixelStore");
+        _glfw.osmesa.MakeCurrent = (PFN_OSMesaMakeCurrent)
+            _glfw_dlsym(_glfw.osmesa.handle, "OSMesaMakeCurrent");
+        _glfw.osmesa.GetColorBuffer = (PFN_OSMesaGetColorBuffer)
+            _glfw_dlsym(_glfw.osmesa.handle, "OSMesaGetColorBuffer");
+        _glfw.osmesa.GetDepthBuffer = (PFN_OSMesaGetDepthBuffer)
+            _glfw_dlsym(_glfw.osmesa.handle, "OSMesaGetDepthBuffer");
+    }
 
     if (strcmp(renderer, "VirGLRenderer") == 0) {
         char* fileName = calloc(1, 1024);
